@@ -1,0 +1,14 @@
+.delay {
+    opacity: 0;
+    transition-property: opacity;
+    transition-duration: 1s;
+}
+
+.delayHover {
+    opacity: .99;
+    cursor: pointer;
+}
+
+.rotatedExpandIcon {
+    transform: rotate(-90deg);
+}

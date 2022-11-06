@@ -1,0 +1,10 @@
+"filename", "language", "TypeScript React", "CSS", "comment", "blank", "total"
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\JsonViewer.module.css", "CSS", 0, 19, 0, 3, 22
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\JsonViewer.tsx", "TypeScript React", 49, 0, 27, 13, 89
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\components\Row.tsx", "TypeScript React", 18, 0, 0, 4, 22
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\jsonTokenizer.tsx", "TypeScript React", 117, 0, 23, 25, 165
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\line-numbers\LineNumbers.tsx", "TypeScript React", 46, 0, 0, 9, 55
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\text-area\TextArea.tsx", "TypeScript React", 46, 0, 0, 6, 52
+"c:\Users\alojz\dev\json-viewer\modules\json-viewer\themes.tsx", "TypeScript React", 114, 0, 0, 12, 126
+"c:\Users\alojz\dev\json-viewer\modules\test\testData.tsx", "TypeScript React", 44, 0, 0, 9, 53
+"Total", "-", 434, 19, 50, 81, 584
