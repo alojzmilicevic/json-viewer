@@ -1,6 +1,6 @@
 import { styled } from "@mui/material";
 import { Row } from "../components/Row";
-import { Token } from "../jsonTokenizer";
+import { Token, TokenTypes } from "../jsonTokenizer";
 import { getColor } from "../themes";
 
 const Container = styled('div')(({ theme }) => ({
@@ -26,27 +26,70 @@ type TextAreaProps = {
     themeType: string;
     selected: number;
     setSelected: (index: number) => void;
+    bracketPairs: number[];
+    collapsed: boolean[];
 }
 
-const TextArea = ({ parsedData, themeType, setSelected, selected }: TextAreaProps) => {
+const getOpposite = (value: string) => {
+    if (value === '{') return '},';
+    if (value === '}') return '{';
+    if (value === '[') return '],';
+    if (value === ']') return '[';
+    return '';
+}
 
-    return <Container>
-        {parsedData.map((tokens, i) => (
+
+/*
+    Check if the current row is inside a collapsed object/array
+ */
+function getRowInfo(currentRow: number, collapsed: boolean[], bracketPairs: number[]) {
+    let hideCurrentRow = false;
+    let showSummaryRow = false;
+
+    // We don't need to check more than the current row
+    for (let i = 0; i <= currentRow; i++) { // <= because we want to check the current row as well
+        const collapsedRow = collapsed[i];
+
+        if (collapsedRow) { // if collapsed check if this row is in the collapsed range
+            const end = bracketPairs[i];
+
+            if (currentRow === i) { // if this row is the start of the collapsed range
+                showSummaryRow = true;
+                break;
+            }
+            if (currentRow > i && currentRow <= end) { // if this row is in the collapsed range
+                hideCurrentRow = true;
+                break;
+            }
+        }
+    }
+    return { hideCurrentRow, showSummaryRow };
+}
+
+const TextArea = ({ parsedData, themeType, setSelected, selected, collapsed, bracketPairs }: TextAreaProps) => <Container>
+    {parsedData.map((tokens, currentRow) => {
+        const { hideCurrentRow, showSummaryRow } = getRowInfo(currentRow, collapsed, bracketPairs);
+
+        if (hideCurrentRow)
+            return null;
+
+        return (
             <Row
-                key={i}
-                onClick={() => setSelected(i)}
-                selected={selected === i}
+                key={currentRow}
+                onClick={() => setSelected(currentRow)}
+                selected={selected === currentRow}
                 style={{ position: 'relative' }}
             >
                 {tokens.map((token: Token, index: number) => (
                     <TokenRow color={getColor(token.type, themeType)} key={index}>
-                        {token.value}
+                        {showSummaryRow && token.type !== TokenTypes.whiteSpace && token.type !== TokenTypes.variable && token.type !== TokenTypes.keyValueSeparator ?
+                            token.value + "..." + getOpposite(token.value) : token.value + ""}
                     </TokenRow>
                 )
                 )}
             </Row>
-        ))}
-    </Container>;
-}
+        );
+    })}
+</Container>
 
 export { TextArea }

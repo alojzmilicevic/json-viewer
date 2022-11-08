@@ -1,6 +1,5 @@
-import { styled, ThemeProvider } from "@mui/material";
+import { Button, styled, ThemeProvider } from "@mui/material";
 import React from "react";
-import { simpleTestJsonWithArray } from "../test/testData";
 import { generateBracketPairs, tokenizeJson } from "./jsonTokenizer";
 import { LineNumbers } from "./line-numbers/LineNumbers";
 import { TextArea } from "./text-area/TextArea";
@@ -10,6 +9,7 @@ const Main = styled('div')({
     display: 'flex',
     minWidth: 450,
     maxWidth: 600,
+    minHeight: 300,
     fontSize: 16,
 });
 
@@ -17,41 +17,16 @@ type JsonViewerProps = {
     themeType: string;
     json?: any;
     showLineNumbers?: boolean;
+    tabSize: number;
+    onCopyJson: () => void;
+    mounting: boolean;
 }
 
-const bracketPairs = generateBracketPairs(simpleTestJsonWithArray);
 
-/*
-    0 {
-    1    "name": "John",
-    2    [
-    3        1, 
-    4        2,
-    5        3   
-    6    ],
-    7    a: {
-    8        s: "s",
-    9   }
-    10 }
+const JsonViewer = ({ json, showLineNumbers, themeType, tabSize, onCopyJson, mounting }: JsonViewerProps) => {
+    const parsedData = tokenizeJson(json, tabSize);
+    const bracketPairs = generateBracketPairs(json);
 
-    [
-        10,
-        -1
-        6,
-        -1,
-        -1,
-        -1,
-        2,
-        9,
-        -1,
-        7,
-        0
-    ]
-*/
-
-
-const JsonViewer = ({ json, showLineNumbers, themeType }: JsonViewerProps) => {
-    const parsedData = tokenizeJson(json || simpleTestJsonWithArray);
     const [selected, setSelected] = React.useState(-1);
     const [collapsed, setCollapsed] = React.useState<boolean[]>(new Array(bracketPairs.length).fill(false));
 
@@ -60,25 +35,33 @@ const JsonViewer = ({ json, showLineNumbers, themeType }: JsonViewerProps) => {
         , [themeType]
     );
 
-
     return (
         <ThemeProvider theme={theme}>
-            <Main>
-                {showLineNumbers && <LineNumbers
-                    selected={selected}
-                    rowCount={parsedData.length}
-                    bracketPairs={bracketPairs}
-                    collapsed={collapsed}
-                    setCollapsed={setCollapsed}
-                />
-                }
-                <TextArea
-                    selected={selected}
-                    setSelected={setSelected}
-                    parsedData={parsedData}
-                    themeType={themeType}
-                />
-            </Main>
+            <div>
+                <div style={{ width: '100%', alignItems: 'flex-end', display: 'flex', justifyContent: 'flex-end', marginBottom: 16 }}>
+                    <Button size="small" variant="outlined" onClick={onCopyJson}>Copy Json</Button>
+                </div>
+
+                <Main>
+                    {(showLineNumbers || mounting) && <LineNumbers
+                        mounting={mounting}
+                        selected={selected}
+                        rowCount={parsedData.length}
+                        bracketPairs={bracketPairs}
+                        collapsed={collapsed}
+                        setCollapsed={setCollapsed}
+                    />
+                    }
+                    <TextArea
+                        selected={selected}
+                        setSelected={setSelected}
+                        parsedData={parsedData}
+                        themeType={themeType}
+                        collapsed={collapsed}
+                        bracketPairs={bracketPairs}
+                    />
+                </Main>
+            </div>
         </ThemeProvider>
     );
 

@@ -1,7 +1,8 @@
-import React from "react";
-import { Checkbox, FormControl, FormControlLabel, InputLabel, MenuItem, Select, styled, Typography } from "@mui/material";
+import { Checkbox, createTheme, FormControl, FormControlLabel, InputLabel, MenuItem, Select, Snackbar, styled, TextField, Typography } from "@mui/material";
+import React, { useState } from "react";
 import { JsonViewer } from "../modules/json-viewer/JsonViewer";
 import { Themes } from "../modules/json-viewer/themes";
+import { simpleTestJsonWithArray } from "../modules/test/testData";
 
 const Wrapper = styled('div')({
     position: 'absolute',
@@ -15,7 +16,6 @@ const Wrapper = styled('div')({
     justifyContent: 'center',
     alignItems: 'center',
     flexDirection: 'column',
-    color: 'black'
 });
 
 const Settings = styled('div')({
@@ -23,18 +23,34 @@ const Settings = styled('div')({
     justifyContent: 'center',
     alignItems: 'flex-start',
     flexDirection: 'column',
-    color: 'black',
+    color:'black',
 });
 
 const JsonViewerExample = () => {
     const [themeType, setThemeType] = React.useState(Themes.Darcula);
     const [showLineNumbers, setShowLineNumbers] = React.useState(true);
+    const [tabSize, setTabSize] = useState(4);
+    const [showSnackbar, setShowSnackbar] = useState(false);
+    const [json, setJson] = useState(simpleTestJsonWithArray);
+    const [mounting, setMounting] = useState(false);
+
+
+    const onCopyJson = () => {
+        setShowSnackbar(true);
+        navigator.clipboard.writeText(JSON.stringify(json, null, tabSize));
+    }
 
     return (
         <Wrapper>
-            <JsonViewer themeType={themeType} showLineNumbers={showLineNumbers} />
+            <JsonViewer
+                json={json}
+                tabSize={tabSize}
+                themeType={themeType}
+                showLineNumbers={showLineNumbers}
+                onCopyJson={onCopyJson}
+                mounting={mounting}
+            />
             <Settings>
-
                 <Typography sx={{ mt: 4 }} variant="h6">Settings</Typography>
                 <FormControl variant="standard" sx={{ minWidth: 240 }}>
                     <InputLabel id="theme-select-label">Theme</InputLabel>
@@ -49,23 +65,55 @@ const JsonViewerExample = () => {
                             <MenuItem key={`${item}${index}`} value={item}>{item}</MenuItem>
                         ))}
                     </Select>
-
                 </FormControl>
                 <FormControlLabel
-                    color="secondary.main"
+                    sx={{ mt: 2 }}
                     label="Show line numbers"
                     control={
                         <Checkbox
                             checked={showLineNumbers}
-                            onChange={() => setShowLineNumbers(!showLineNumbers)}
+                            onChange={() => {
+                                setMounting(!mounting);
+                                return setShowLineNumbers(!showLineNumbers);
+                            }}
                         />
                     }
                 />
+                <FormControl variant="standard" sx={{ minWidth: 240 }}>
+                    <InputLabel id="tab-size-select-label">Tab Size</InputLabel>
+                    <Select
+                        labelId="tab-size-select-label"
+                        id="tab-size-select-label"
+                        value={tabSize}
+                        label="Tab Size"
+                        onChange={(e) => setTabSize(e.target.value as number)}
+                        MenuProps={{
+                            sx: {
+                                "&& .Mui-selected": {
+                                    backgroundColor: "#66749d3b",
+                                }
+                            }
+                        }}
+                    >
+                        {[2, 4, 6].map((item: number) => (
+                            <MenuItem key={item} value={item}>
+                                {item}
+                            </MenuItem>
+                        ))}
+                    </Select>
+                </FormControl>
             </Settings>
 
+            <Snackbar
+                open={showSnackbar}
+                autoHideDuration={6000}
+                onClose={() => setShowSnackbar(false)}
+                message="Json copied to clipboard!"
+            />
         </Wrapper>
     )
 
 }
 
 export { JsonViewerExample };
+

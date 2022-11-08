@@ -1,3 +1,4 @@
+import { log } from "console";
 import { isNum } from "../../util/util";
 
 export type TokenType =
@@ -34,8 +35,8 @@ export type Token = {
     type: TokenType;
 }
 
-export function tokenizeJson(data: any, space = 4) {
-    data = JSON.stringify(data, null, space).split('\n');
+export function tokenizeJson(data: any, tabSize = 4) {
+    data = JSON.stringify(data, null, tabSize).split('\n');
     const result: Token[][] = [];
 
     data.forEach((line: any, i: number) => {
@@ -137,8 +138,8 @@ function getVariableName(line: string): string {
  * @param rawData the raw json data
  * @returns all bracket and square bracket positions in the json
  */
-export function generateBracketPairs(rawData: any) {
-    rawData = JSON.stringify(rawData, null, 4);
+export function generateBracketPairs(rawData: any, space = 4) {
+    rawData = JSON.stringify(rawData, null, space);
     
     const stack: number[] = [];
     const data: number[] = [];
@@ -151,7 +152,6 @@ export function generateBracketPairs(rawData: any) {
         } else if (curChar === '}' || curChar === ']') {
             const start = stack.pop() as number;
             data[start] = row;
-            data[row] = start;
         } else if (curChar === '\n') {
             row++;
             data[row] = -1;

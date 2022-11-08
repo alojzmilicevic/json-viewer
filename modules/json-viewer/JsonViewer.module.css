@@ -12,3 +12,18 @@
 .rotatedExpandIcon {
     transform: rotate(-90deg);
 }
+
+.mounting {
+    width: 0px;
+    padding: 0;
+    transition-property: width, padding;
+    transition-duration: .4s;
+    
+    color: transparent;
+}
+
+.mounted {
+    width: unset;
+    padding: 8px 32px;
+    transition-duration: .4s;
+}
